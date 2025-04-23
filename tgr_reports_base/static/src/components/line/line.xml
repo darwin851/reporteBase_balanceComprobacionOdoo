@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<templates>
+  <t t-name="tgr_reports_base.TgrLine">
+    <tr t-att-class="lineClasses" t-att-data-id="props.line.id">
+      <!-- Columna code -->
+      <td t-if="props.line.code">
+        <span t-esc="props.line.code"/>
+      </td>
+      <!-- Columna de nombre -->
+      <td>
+        <span t-att-style="'padding-left: ' + (props.line.level * 20) + 'px'">
+          <t t-out="props.line.name" />
+        </span>
+      </td>
+
+      <!-- Columnas de valores -->
+      <t t-foreach="props.line.columns" t-as="cell" t-key="cell_index">
+        <TgrCell cell="cell"/> 
+      </t>
+    </tr>
+  </t>
+</templates>

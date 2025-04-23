@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+  <t t-name="tgr_reports_base.TgrDateRangePicker" owl="1">
+    <div class="dropdown date-range-picker mb-1">
+      <button
+        class="btn btn-outline-primary btn-sm dropdown-toggle" 
+        type="button"
+        data-bs-toggle="dropdown"
+        aria-expanded="false"
+        t-attf-style="min-width:{{props.buttonMinWidth}}"
+      >
+        <i class="fa fa-calendar me-1" />
+        <t t-esc="props.buttonLabel" />
+      </button>
+      <ul class="dropdown-menu">
+        <li>
+          <div class="dropdown-item" data-target-input="nearest">
+            <label for="start_date" class="form-label">Fecha Desde:</label>
+            <input
+              type="date"
+              class="form-control"
+              id="start_date"
+              t-ref="startDate"
+              t-on-change="onDateChange"
+              t-att-value="props.defaultStartDate"
+              name="start_date"
+            />
+          </div>
+        </li>
+        <li>
+          <div class="dropdown-item" data-target-input="nearest">
+            <label for="end_date" class="form-label">Fecha Hasta:</label>
+            <input
+              type="date"
+              class="form-control"
+              id="end_date"
+              t-ref="endDate"
+              t-on-change="onDateChange"
+              t-att-value="props.defaultEndDate"
+              name="end_date"
+            />
+          </div>
+        </li>
+      </ul>
+    </div>
+  </t>
+</templates>

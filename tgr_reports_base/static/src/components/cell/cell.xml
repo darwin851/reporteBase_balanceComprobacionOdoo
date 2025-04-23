@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<templates>
+  <t t-name="tgr_reports_base.TgrCell">
+    <td class="line_cell" t-att-class="cellClasses">
+      <div class="content">
+        <t t-out="props.cell.name" />
+      </div>
+    </td>
+  </t>
+</templates>

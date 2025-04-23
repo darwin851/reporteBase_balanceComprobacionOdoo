@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+  <record id="action_account_trial_balance" model="ir.actions.client">
+    <field name="name">Balance de Comprobación de Saldos</field>
+    <field name="tag">a_trl_b</field>
+  </record>
+  <record id="action_report_test" model="ir.actions.client">
+    <field name="name">Report Test</field>
+    <field name="tag">a_r_t</field>
+  </record>
+  <menuitem
+    id="tgr_l10n_sv_dynamic_report_accounting"
+    name="Reportes Financieros Funpres"
+    parent="account.menu_finance_reports"
+  />
+  <menuitem
+    id="tgr_l10n_sv_account_trial_balance"
+    name="Balance de Comprobación de Saldos"
+    action="action_account_trial_balance"
+    parent="tgr_l10n_sv_dynamic_report_accounting"
+  />
+</odoo>

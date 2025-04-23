@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+  <t t-name="tgr_reports_base.Button1" owl="1">
+    <button
+      t-attf-class="{{buttonClasses}}"
+      t-on-click="onClick"
+      t-att-disabled="props.disabled"
+    >
+      <i t-if="props.icon" t-attf-class="fa {{props.icon}} me-1" />
+      <t t-if="props.label" t-esc="props.label" />
+      <t t-else="">
+        <t t-slot="default" />
+      </t>
+    </button>
+  </t>
+</templates>

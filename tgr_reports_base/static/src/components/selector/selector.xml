@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+    <t t-name="tgr_reports_base.TgrSelector" owl="1">
+    
+            <div class="dropdown mb-1">
+                <button type="button" class="btn btn-outline-primary btn-sm dropdown-toggle"
+                   data-bs-toggle="dropdown" t-attf-style="display: flex;
+                                                text-wrap: wrap;
+                                                flex-direction: row;
+                                                align-items: center;
+                                                justify-content: flex-start;
+                                                min-width: {{props.buttonMinWidth}};">
+                    <span t-attf-class="fa {{props.icon}} me-1" t-att-title="props.title" role="img"/>
+                    <t t-esc="props.title"/>
+                    <t t-if="state.selectedItems.length">:
+                        <t t-foreach="getSelectedItemsDisplay()" t-as="display" t-key="display_index">
+                            <t t-esc="display"/>
+                            <t t-if="display_index !== getSelectedItemsDisplay().length - 1">, </t>
+                        </t>
+                    </t>
+                </button>
+                <div class="dropdown-menu" role="menu">
+                    <div class="list-group">
+                        <div class="dropdown-item p-2">
+                            <div class="d-flex justify-content-between mb-2">
+              <button class="btn btn-sm btn-secondary" t-on-click="selectAll">
+                      <t t-esc="props.selectAllText"/>
+              </button>
+                                <button class="btn btn-sm btn-secondary" t-on-click="deselectAll">
+                                    <t t-esc="props.deselectAllText"/>
+                                </button>
+                            </div>
+                            <div class="items-container" style="max-height: 300px; overflow-y: auto;">
+                                <t t-foreach="state.items" t-as="item" t-key="item[props.idField || 'id']">
+                                    <div class="form-check">
+                                        <input type="checkbox"
+                                               class="form-check-input"
+                                               t-att-id="'item_' + item[props.idField || 'id']"
+                                               t-att-checked="isItemSelected(item[props.idField || 'id'])"
+                                               t-on-change="() => this.toggleItem(item[props.idField || 'id'])"/>
+                                        <label class="form-check-label" t-att-for="'item_' + item[props.idField || 'id']">
+                                            <t t-esc="item[props.displayField || 'name']"/>
+                                            <t t-if="props.secondaryField &amp;&amp; item[props.secondaryField]">
+                                                <small class="text-muted ms-1">(<t t-esc="item[props.secondaryField]"/>)</small>
+                                            </t>
+                                        </label>
+                                    </div>
+                                </t>
+                                <div t-if="!state.items.length" class="text-center text-muted py-2">
+                                    <t t-esc="props.noItemsText"/>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+    </t>
+</templates>
