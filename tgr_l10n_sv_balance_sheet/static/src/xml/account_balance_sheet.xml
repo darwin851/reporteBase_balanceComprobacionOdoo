@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<templates>
+  <t t-name="account_balance_sheet_template" owl="1">
+    <div class="tgr_reports_base">
+      <div class="fin_report">
+        <!-- Filter Report -->
+        <div class="filter_view_gl">
+          <div class="">
+            <h1 style="padding: 10px"><t t-esc="props.action.name" /></h1>
+          </div>
+          <div
+            style="
+              margin-right: 10px;
+              margin-left: 10px;
+              margin-bottom: 15px;
+              display: flex;
+            "
+          >
+            <!-- Print/Excel button-->
+            <div class="sub_container_left" style="width: 70%">
+              <div class="report_print">
+                <!-- Print (PDF) Button -->
+                <button
+                  type="button"
+                  class="btn btn-primary"
+                  t-on-click="printPdf"
+                >
+                  Imprimir
+                  <i class="fa fa-file-pdf-o me-2" />
+                </button>
+                <!-- Export (XLSX) Button -->
+                <button
+                  type="button"
+                  class="btn btn-primary mx-2"
+                  t-on-click="exportToExcel"
+                >
+                  Exportar <i class="fa fa-file-excel-o me-2" />
+                </button>
+              </div>
+            </div>
+            <div class="sub_container_right">
+              <!-- Time Range -->
+              <TgrDateRangePicker
+                buttonLabel="'Rango de Fechas'"
+                defaultStartDate="state.dateRange.startDate"
+                defaultEndDate="state.dateRange.endDate"
+                onRangeChange="(range)=>this.onDateRangeChange(range)"
+              />
+              <TgrSelector 
+                title="'Diarios'"
+                icon="'fa-tags'"
+                items="state.journals"
+                onSelectionChange="(selected) => this.onJournalSelection(selected)"
+                  />
+            </div>
+          </div>
+        </div>
+      </div>
+      <br />
+      <div class="o_content">
+        <div class="mx-auto">
+          <div t-if="state.isLoading" class="text-center py-5">
+        <i class="fa fa-spinner fa-spin fa-2x"/>
+        <p class="mt-2">Cargando reporte...</p>
+    </div>
+    
+    <div t-elif="state.error" class="alert alert-danger">
+        <t t-out="state.error"/>
+    </div>
+    
+    <div t-elif="!state.data" class="alert alert-warning">
+        No hay datos disponibles para mostrar.
+    </div>
+    
+    <TgrReport t-else=""
+               reportName="''"
+                data="state.data"/> 
+
+        </div>
+      </div>
+    </div>
+  </t>
+</templates>

@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+  <record id="action_account_balance_sheet" model="ir.actions.client">
+    <field name="name">Balance General</field>
+    <field name="tag">a_b_s</field>
+  </record>
+  <menuitem
+    id="tgr_l10n_sv_account_trial_balance"
+    name="Balance General"
+    action="action_account_balance_sheet"
+    parent="tgr_l10n_sv_trial_balance.tgr_l10n_sv_dynamic_report_accounting"
+    sequence="20"
+  />
+</odoo>

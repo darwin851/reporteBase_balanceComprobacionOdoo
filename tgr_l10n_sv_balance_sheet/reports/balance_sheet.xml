@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+<template id="trial_balance_sheet">
+   <t t-call="web.html_container">
+        <t t-call="web.external_layout">
+            <t t-set="data_report_margin_top" t-value="2"/>
+            <t t-set="data_report_header_spacing" t-value="0"/>
+            <t t-set="data_report_dpi" t-value="5"/>
+                <div class="page">
+                    <div class="row">
+                        <div class="col-12">
+                            <h3>
+                                <center>
+                                    <b>
+                                        <span t-esc="report_name"/>
+                                    </b>
+                                </center>
+                            </h3>
+                            <p t-esc="data_filters"/>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-12">
+                            <t t-if="data">
+                                <!--<table class="table table-sm table-borderless">-->
+                                <table class="table table-sm table-borderless table-hover striped">
+                                    <thead >
+                                    <tr style="border-bottom: 2px solid #dee2e6;">
+                                        <t t-foreach="data['header_0']" t-as="h0">
+                                            <th t-att-colspan="h0['colspan']" class="text-center" t-esc="h0['name']"/>
+                                        </t>
+                                    </tr>
+                                    <tr>
+                                        <t t-foreach="data['header']" t-as="h1">
+                                            <th class="text-center" t-esc="h1"/>
+                                        </t>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                        <t t-foreach="data['lines']" t-as="line">
+                                            <tr t-attf-style="border-bottom: 1px solid #dee2e6;{{'background-color:#ced4da;' if line['level'] == 0 else ''}}" >
+                                                <td style="padding-left: 5px;"><span t-esc="line['code']"/></td>
+                                                <td t-attf-style="padding-left: #{line['level'] * 5}px;"><strong t-if="line['level'] &lt; 2"><span t-esc="line['name']"/></strong><span t-else="" t-esc="line['name']"/></td>
+                                                <t t-foreach="line['columns']" t-as="col">
+                                                    <td t-attf-class="text-end {{'text-muted' if col['no_format'] == 0 else ''}}"><span t-esc="col['name']"/></td>
+                                                </t>
+                                            </tr>
+                                        </t>
+                                        <tr style="background-color:#ced4da;">
+                                            <td colspan="2" class="text-center">
+                                                <strong t-esc="data['footer']['name']"/>
+                                            </td>
+                                            <t t-foreach="data['footer']['columns']" t-as="col">
+                                                    <td t-attf-class="text-end {{'text-muted' if col['no_format'] == 0 else ''}}"><span t-esc="col['name']"/></td>
+                                            </t>
+                                        </tr>
+                                    </tbody>
+                                    <tfoot>
+
+                                    </tfoot>
+                                </table>
+                            </t>
+                        </div>
+                    </div>
+                </div>
+            </t>
+        </t>
+  </template>
+
+  <record id="tgr_action_trial_balance" model="ir.actions.report">
+      <field name="name">Balance General</field>
+      <field name="model">l10n_sv.account.trial.balance.sheet</field>
+      <field name="report_type">qweb-pdf</field>
+      <field name="report_name">tgr_l10n_sv_balance_sheet.trial_balance</field>
+      <field name="report_file">tgr_l10n_sv_balance_sheet.trial_balance</field>
+  </record>
+
+</odoo>
