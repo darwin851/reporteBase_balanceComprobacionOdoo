@@ -1,69 +1,60 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <templates>
-  <t t-name="tgr_reports_base.TgrReport">
-    <div class="tgr_report" t-att-data-report="props.reportName">
-  <!-- <h3 t-if="props.data and props.data.title" class="mb-3"> -->
-  <!--   <t t-out="props.data.title or ''" /> -->
-  <!-- </h3> -->
+    <t t-name="tgr_reports_base.TgrReport">
+        <div class="tgr_report" t-att-data-report="props.reportName">
 
-  <div class="tgr_table-container" t-if="props.data and props.data.header and props.data.header.length">
-    <table class="tgr_table table-borderless table-hover striped" t-ref="table">
-      <thead>
-            
-        <tr>
-          <!-- Añadir comprobación adicional para el primer encabezado -->
-          <!--<th t-if="props.data.header_0 and props.data.header_0.length">-->
-          <!--  <t t-out="props.data.header_0[0].name or ''" />-->
-          <!--</th>-->
+            <div class="tgr_table-container" t-if="props.data and props.data.header and props.data.header.length">
+                <table class="tgr_table table-borderless table-hover striped" t-ref="table">
+                    <thead>
+                        <tr>
+                            <t
+                                    t-foreach="props.data.header_0"
+                                    t-as="header"
+                                    t-key="header_index"
+                            >
+                                <th t-attf-colspan="{{header['colspan']}}" class="text-end">
+                                    <t t-out="header['name'] or ''"/>
+                                </th>
+                            </t>
+                        </tr>
+                        <tr>
+                            <!-- Añadir comprobación adicional para el primer encabezado -->
+                            <th t-if="props.data.header and props.data.header.length">
+                                <t t-out="props.data.header[0] or 'Descripción'"/>
+                            </th>
 
-          <t
-            t-foreach="props.data.header_0"
-            t-as="header"
-            t-key="header_index"
-          >
-                <th t-attf-colspan="{{header['colspan']}}" class="text-end"><t t-out="header['name'] or ''" /></th>
-          </t>
-        </tr>
-        <tr>
-          <!-- Añadir comprobación adicional para el primer encabezado -->
-          <th t-if="props.data.header and props.data.header.length">
-            <t t-out="props.data.header[0] or 'Descripción'" />
-          </th>
+                            <t
+                                    t-foreach="props.data.header.slice(1)"
+                                    t-as="header"
+                                    t-key="header_index"
+                            >
+                                <th class="text-center">
+                                    <t t-out="header or ''"/>
+                                </th>
+                            </t>
+                        </tr>
+                    </thead>
 
-          <t
-            t-foreach="props.data.header.slice(1)"
-            t-as="header"
-            t-key="header_index"
-          >
-            <th class="text-center"><t t-out="header or ''" /></th>
-          </t>
-        </tr>
-      </thead>
+                    <tbody t-if="props.data.lines">
+                        <t t-foreach="props.data.lines" t-as="line" t-key="line.id">
+                            <TgrLine line="line" lineIndex="line_index"/>
+                        </t>
+                    </tbody>
 
-      <tbody t-if="props.data.lines">
-        <t t-foreach="props.data.lines" t-as="line" t-key="line.id">
-              <TgrLine line="line" lineIndex="line_index"/>
-        </t>
-      </tbody>
-
-    <tfoot t-if="props.data.footer and props.data.footer.name">
-     <tr>
-        <td colspan="2"><t t-out="props.data.footer.name or 'Total'" /></td>
-      <t
-        t-if="props.data.footer.columns"
-        t-foreach="props.data.footer.columns"
-        t-as="cell"
-        t-key="cell_index"
-      >
-                <TgrCell cell="cell"/>
-       </t> 
-         </tr>
-      </tfoot>
-    </table>
-  </div>
-  <div t-else="" class="alert alert-info">
-    No hay datos disponibles para mostrar.
-  </div>
-</div>
-  </t>
+                    <tfoot t-if="props.data.footer and props.data.footer.columns">
+                        <tr style="background-color:#ced4da;">
+                            <t t-foreach="props.data.footer.columns" t-as="cell" t-key="cell_index">
+                                <td class="text-end">
+                                    <t t-esc="cell.name"/>
+                                </td>
+                            </t>
+                        </tr>
+                    </tfoot>
+                </table>
+            </div>
+            <div t-else="" class="alert alert-info">
+                No hay datos disponibles para mostrar.
+            </div>
+        </div>
+    </t>
 </templates>

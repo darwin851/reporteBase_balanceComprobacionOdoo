@@ -10,6 +10,7 @@ import {Button1} from "@tgr_reports_base/components/button/button"
 import {TgrDateRangePicker} from "@tgr_reports_base/components/date_range/date_range"
 import {TgrReport} from "@tgr_reports_base/components/report/report"
 import {TgrSelector} from "@tgr_reports_base/components/selector/selector"
+import {TgrBalanceSheet} from "@tgr_reports_base/components/report/tgr_balance_sheet";
 
 
 const actionRegistry = registry.category("actions");
@@ -17,7 +18,7 @@ const today = luxon.DateTime.now();
 let monthNamesShort = ["Ene", "Feb", "Mar", "Abr", "May", "Jun", "Jul", "Ago", "Set", "Oct", "Nov", "Dic"]
 
 class AccountTrialBalance extends owl.Component {
-    static components = {Button1, TgrDateRangePicker, TgrReport, TgrSelector};
+    static components = {Button1, TgrDateRangePicker, TgrSelector, TgrBalanceSheet};
 
     async setup() {
         super.setup(...arguments);
@@ -33,20 +34,19 @@ class AccountTrialBalance extends owl.Component {
         const defaultStartDate = startOfMonth.toISOString().split('T')[0]; // formato YYYY-MM-DD
         const defaultEndDate = endOfMonth.toISOString().split('T')[0]; // formato YYYY-MM-DD
         this.state = useState({
-            dateRange: {
-                startDate: defaultStartDate,
-                endDate: defaultEndDate
+            isLoading: true,
+            error: null,
+            dateRange: {startDate: defaultStartDate, endDate: defaultEndDate},
+            data: {
+                assets: [],
+                liabilities: [],
+                totals: {assets: {value: 0, text: "0.00"}, liabilities: {value: 0, text: "0.00"}},
+                journal_ids: []
             },
-            move_line: null,
-            data: null,
-            total: null,
             journals: [],
             selectedJournals: [],
-            date_viewed: [],
-            apply_comparison: false,
-            comparison_type: null,
         });
-        this.load_data(self.initial_render = true);
+        await this.load_data();
     }
 
     async onDateRangeChange(range) {
@@ -61,28 +61,25 @@ class AccountTrialBalance extends owl.Component {
     }
 
     async load_data() {
-        var self = this;
-        var action_title = self.props.action.display_name;
         try {
-            var self = this;
-            var today = new Date()
-            var startOfMonth = new Date(today.getFullYear(), today.getMonth(), 1);
-            var endOfMonth = new Date(today.getFullYear(), today.getMonth() + 1, 0);
-
-            const dateFrom = startOfMonth.toISOString().split('T')[0];
-            const dateTo = endOfMonth.toISOString().split('T')[0];
-
-            self.state.data = await self.orm.call('l10n_sv.account.trial.balance.sheet', 'view_report', [], {
-                context: {
-                    filter_balance_sheet: true,
-                }
+            this.state.isLoading = true;
+            const res = await this.orm.call(
+                'l10n_sv.account.trial.balance.sheet', 'view_report', [], {context: {filter_balance_sheet: true}}
+            );
+            this.state.data = res || this.state.data;
+            this.state.journals = this.state.data.journal_ids || [];
+            console.log("AccountTrialBalance -> data:", {
+                assets: this.state.data.assets?.length,
+                liabilities: this.state.data.liabilities?.length,
+                totals: this.state.data.totals,
             });
-            self.state.journals = [...self.state.data.journal_ids]
-            console.log('Journals cargados', self.state.journals)
-        } catch (el) {
-            window.location.href;
+        } catch (e) {
+            this.state.error = e.message || String(e);
+        } finally {
+            this.state.isLoading = false;
         }
     }
+
 
     async applyFilter(val, ev, is_delete) {
         this.state.data = await this.orm.call('l10n_sv.account.trial.balance.sheet', 'get_filter_values', [

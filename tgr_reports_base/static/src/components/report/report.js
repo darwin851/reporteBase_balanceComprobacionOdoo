@@ -1,6 +1,7 @@
 /** @odoo-module */
 
 import { Component, useRef, onMounted } from "@odoo/owl";
+import { registry } from "@web/core/registry";
 import { TgrLine } from "../line/line";
 import { TgrCell } from "../cell/cell";
 
