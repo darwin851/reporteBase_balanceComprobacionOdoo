@@ -6,50 +6,58 @@
         <thead>
           <tr>
             <th class="text-center">Cuenta</th>
-            <th class="text-center"></th>
-            <th class="text-center"></th>
-            <th class="text-center">Saldo</th>
+            <th class="text-center">Nivel 3+</th>
+            <th class="text-center">Nivel 2</th>
+            <th class="text-center">Nivel 1</th>
+            <th class="text-center">Nivel 0</th>
           </tr>
         </thead>
 
         <!-- ==================== ACTIVO ==================== -->
         <tbody>
           <tr class="table-primary">
-            <td colspan="4" class="fw-bold text-center">ACTIVO</td>
+            <td colspan="5" class="fw-bold text-center">ACTIVO</td>
           </tr>
           <t t-foreach="props.assets || []" t-as="acc" t-key="acc.code">
             <tr>
               <!-- Nombre de cuenta -->
               <td>
-                <t t-out="(acc.code ? acc.code + ' ' : '') + (acc.name || '')"/>
+                <t t-out="(acc.code ? acc.code + ' ' : '') + (acc.name or '')"/>
               </td>
 
-              <!-- Columna Nivel 3 -->
+              <!-- Columna Nivel 3+ -->
               <td class="text-end">
-                <t t-if="acc.level == 3">
-                  <t t-out="acc.amount_fmt || ''"/>
+                <t t-if="acc.level &gt;= 3">
+                  <t t-out="acc.amount_fmt or ''"/>
                 </t>
               </td>
 
               <!-- Columna Nivel 2 -->
               <td class="text-end fw-bold">
                 <t t-if="acc.level == 2">
-                  <t t-out="acc.amount_fmt || ''"/>
+                  <t t-out="acc.amount_fmt or ''"/>
                 </t>
               </td>
 
               <!-- Columna Nivel 1 -->
               <td class="text-end fw-bold">
                 <t t-if="acc.level == 1">
-                  <t t-out="acc.amount_fmt || ''"/>
+                  <t t-out="acc.amount_fmt or ''"/>
+                </t>
+              </td>
+
+              <!-- Columna Nivel 0 -->
+              <td class="text-end fw-bold">
+                <t t-if="acc.level == 0">
+                  <t t-out="acc.amount_fmt or ''"/>
                 </t>
               </td>
             </tr>
           </t>
           <tr class="fw-bold" style="background-color:#f1f3f5;">
-            <td colspan="3" class="text-end">Total Activo</td>
+            <td colspan="4" class="text-end">Total Activo</td>
             <td class="text-end">
-              <t t-out="(props.totals and props.totals.assets and props.totals.assets.text) || ''"/>
+              <t t-out="(props.totals and props.totals.assets and props.totals.assets.text) or ''"/>
             </td>
           </tr>
         </tbody>
@@ -57,41 +65,48 @@
         <!-- ==================== PASIVO Y PATRIMONIO ==================== -->
         <tbody>
           <tr class="table-primary">
-            <td colspan="4" class="fw-bold text-center">PASIVO Y PATRIMONIO</td>
+            <td colspan="5" class="fw-bold text-center">PASIVO Y PATRIMONIO</td>
           </tr>
           <t t-foreach="props.liabilities || []" t-as="acc" t-key="acc.code">
             <tr>
               <!-- Nombre de cuenta -->
               <td>
-                <t t-out="(acc.code ? acc.code + ' ' : '') + (acc.name || '')"/>
+                <t t-out="(acc.code ? acc.code + ' ' : '') + (acc.name or '')"/>
               </td>
 
-              <!-- Columna Nivel 3 -->
+              <!-- Columna Nivel 3+ -->
               <td class="text-end">
-                <t t-if="acc.level == 3">
-                  <t t-out="acc.amount_fmt || ''"/>
+                <t t-if="acc.level &gt;= 3">
+                  <t t-out="acc.amount_fmt or ''"/>
                 </t>
               </td>
 
               <!-- Columna Nivel 2 -->
               <td class="text-end fw-bold">
                 <t t-if="acc.level == 2">
-                  <t t-out="acc.amount_fmt || ''"/>
+                  <t t-out="acc.amount_fmt or ''"/>
                 </t>
               </td>
 
               <!-- Columna Nivel 1 -->
               <td class="text-end fw-bold">
                 <t t-if="acc.level == 1">
-                  <t t-out="acc.amount_fmt || ''"/>
+                  <t t-out="acc.amount_fmt or ''"/>
+                </t>
+              </td>
+
+              <!-- Columna Nivel 0 -->
+              <td class="text-end fw-bold">
+                <t t-if="acc.level == 0">
+                  <t t-out="acc.amount_fmt or ''"/>
                 </t>
               </td>
             </tr>
           </t>
           <tr class="fw-bold" style="background-color:#f1f3f5;">
-            <td colspan="3" class="text-end">Total Pasivo + Patrimonio</td>
+            <td colspan="4" class="text-end">Total Pasivo + Patrimonio</td>
             <td class="text-end">
-              <t t-out="(props.totals and props.totals.liabilities and props.totals.liabilities.text) || ''"/>
+              <t t-out="(props.totals and props.totals.liabilities and props.totals.liabilities.text) or ''"/>
             </td>
           </tr>
         </tbody>
