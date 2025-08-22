@@ -202,7 +202,7 @@ class AccountTrialBalance(models.TransientModel):
             render_ids = list(all_ids)
 
         # --- metadata de cuentas a renderizar y mezclar saldos ---
-        accounts_meta = self._get_accounts_data(render_ids)   # dict {id: meta}
+        accounts_meta = self._get_accounts_data(render_ids)  # dict {id: meta}
         for aid in list(accounts_meta.keys()):
             ta = total_amount.get(aid, {
                 "initial_balance": 0.0, "debit": 0.0, "credit": 0.0,
@@ -230,9 +230,19 @@ class AccountTrialBalance(models.TransientModel):
         # Agregar los grupos
         groups_data = self._get_groups_data(accounts_data, total_amount)
 
+        for acc in accounts_data.values():
+            parent_code = acc.get("parent_code")
+            while parent_code:
+                if parent_code in groups_data:
+                    groups_data[parent_code]["ending_balance"] += acc["ending_balance"]
+                    groups_data[parent_code]["balance"] += acc["balance"]
+                    parent_code = groups_data[parent_code].get("parent_code")
+                else:
+                    parent_code = None
+
         # Unificar (grupos + cuentas) y ordenar
         rows = list(groups_data.values()) + list(accounts_data.values())
-        rows.sort(key=lambda r: (r.get("complete_code") or r.get("code") or ""))
+        rows.sort(key=lambda r: (r.get("code") or r.get("code") or ""))
 
         def level_of(item):
             return (item.get("complete_code") or "").count("/")
@@ -251,21 +261,27 @@ class AccountTrialBalance(models.TransientModel):
 
         assets, liabilities = [], []
         total_assets, total_liab = 0.0, 0.0
-        show_zero = True  # cambiar a False si quieres ocultar ceros en la grilla
+        show_zero = False  # cambiar a False si quieres ocultar ceros en la grilla
 
         for it in rows:
             amount = it.get("ending_balance", 0.0) or 0.0
+
+            if it.get("type") == "account":
+                at = (it.get("account_type") or "")
+                if at in ("liability_current", "liability_non_current", "equity", "income"):
+                    amount = -amount
+
             if not show_zero and float_round(abs(amount), precision) == 0.0:
                 continue
 
             line = {
-                "id": f"{it['id']}_{it.get('type','')}",
+                "id": f"{it['id']}_{it.get('type', '')}",
                 "code": it.get("code") or "",
                 "name": it.get("name") or "",
                 "level": level_of(it),
                 "type": it.get("type"),
-                "amount": abs(amount),
-                "amount_fmt": formatLang(self.env, abs(amount)),
+                "amount": amount,
+                "amount_fmt": formatLang(self.env, amount),
                 "note": "",
             }
 
@@ -382,19 +398,20 @@ class AccountTrialBalance(models.TransientModel):
         if journal_ids:
             domain += [("journal_id", "in", journal_ids)]
         domain += [("display_type", "not in", ["line_note", "line_section"])]
-        domain += [("parent_state", "=", "posted")] if only_posted_moves else [("parent_state", "in", ["posted", "draft"])]
+        domain += [("parent_state", "=", "posted")] if only_posted_moves else [
+            ("parent_state", "in", ["posted", "draft"])]
         return domain
 
-    def _get_initial_balances_pl_ml_domain(self, account_ids, journal_ids, date_from, only_posted_moves, fy_start_date):
-        # no usado aquí
-        domain = [("date", "<", date_from)]
-        if account_ids:
-            domain += [("account_id", "in", account_ids)]
-        if journal_ids:
-            domain += [("journal_id", "in", journal_ids)]
-        domain += [("display_type", "not in", ["line_note", "line_section"])]
-        domain += [("parent_state", "=", "posted")] if only_posted_moves else [("parent_state", "in", ["posted", "draft"])]
-        return domain
+    # def _get_initial_balances_pl_ml_domain(self, account_ids, journal_ids, date_from, only_posted_moves, fy_start_date):
+    #     # no usado aquí
+    #     domain = [("date", "<", date_from)]
+    #     if account_ids:
+    #         domain += [("account_id", "in", account_ids)]
+    #     if journal_ids:
+    #         domain += [("journal_id", "in", journal_ids)]
+    #     domain += [("display_type", "not in", ["line_note", "line_section"])]
+    #     domain += [("parent_state", "=", "posted")] if only_posted_moves else [("parent_state", "in", ["posted", "draft"])]
+    #     return domain
 
     def _get_period_ml_domain(self, account_ids, journal_ids, date_to, date_from, only_posted_moves):
         domain = [
@@ -407,7 +424,8 @@ class AccountTrialBalance(models.TransientModel):
             domain += [("account_id", "in", account_ids)]
         if journal_ids:
             domain += [("journal_id", "in", journal_ids)]
-        domain += [("parent_state", "=", "posted")] if only_posted_moves else [("parent_state", "in", ["posted", "draft"])]
+        domain += [("parent_state", "=", "posted")] if only_posted_moves else [
+            ("parent_state", "in", ["posted", "draft"])]
         return domain
 
     # -------------------------------------------------------------------------
