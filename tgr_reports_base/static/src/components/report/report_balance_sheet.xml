@@ -6,10 +6,10 @@
         <thead>
           <tr>
             <th class="text-center">Cuenta</th>
-            <th class="text-center">Nivel 3+</th>
-            <th class="text-center">Nivel 2</th>
-            <th class="text-center">Nivel 1</th>
-            <th class="text-center">Nivel 0</th>
+            <th class="text-center"></th>
+            <th class="text-center"></th>
+            <th class="text-center"></th>
+            <th class="text-center"></th>
           </tr>
         </thead>
 
