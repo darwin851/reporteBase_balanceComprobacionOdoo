@@ -191,6 +191,9 @@ class AccountTrialBalance(models.TransientModel):
                 "ending_balance": ending_balance,
             }
 
+            _logger.info("💰 Cuenta calculada: id=%s inicial=%s debit=%s credit=%s balance=%s ending=%s",
+                         acc_id, initial_balance, debit, credit, period_balance, ending_balance)
+
         # --- decidir qué cuentas mostrar ---
         precision = self.env.company.currency_id.decimal_places
         if hide_account_at_0:
@@ -203,12 +206,44 @@ class AccountTrialBalance(models.TransientModel):
 
         # --- metadata de cuentas a renderizar y mezclar saldos ---
         accounts_meta = self._get_accounts_data(render_ids)  # dict {id: meta}
-        for aid in list(accounts_meta.keys()):
-            ta = total_amount.get(aid, {
-                "initial_balance": 0.0, "debit": 0.0, "credit": 0.0,
-                "balance": 0.0, "ending_balance": 0.0
-            })
-            accounts_meta[aid].update(ta)
+        for aid in list(accounts_meta.keys()):  # ✅ hacemos copia de las llaves
+            acc = accounts_meta[aid]
+
+            if acc.get("type") != "account":
+                continue
+
+            grp_id = acc.get("group_id")
+            grp = self.env["account.group"].browse(grp_id) if grp_id else False
+            while grp and grp.exists():
+                gid = grp.id
+                if gid not in accounts_meta:
+                    accounts_meta[gid] = {
+                        "id": gid,
+                        "code": grp.code_prefix_start,
+                        "name": grp.name,
+                        "type": "group",
+                        "initial_balance": 0.0,
+                        "debit": 0.0,
+                        "credit": 0.0,
+                        "balance": 0.0,
+                        "ending_balance": 0.0,
+                        "parent_code": grp.parent_id.code_prefix_start if grp.parent_id else None,
+                        "group_id": grp.parent_id.id if grp.parent_id else None,
+                    }
+                accounts_meta[gid]["initial_balance"] += acc.get("initial_balance", 0.0) or 0.0
+                accounts_meta[gid]["debit"] += acc.get("debit", 0.0) or 0.0
+                accounts_meta[gid]["credit"] += acc.get("credit", 0.0) or 0.0
+                accounts_meta[gid]["balance"] += acc.get("balance", 0.0) or 0.0
+                accounts_meta[gid]["ending_balance"] += acc.get("ending_balance", 0.0) or 0.0
+
+                grp = grp.parent_id
+
+        # for aid in list(accounts_meta.keys()):
+        #     ta = total_amount.get(aid, {
+        #         "initial_balance": 0.0, "debit": 0.0, "credit": 0.0,
+        #         "balance": 0.0, "ending_balance": 0.0
+        #     })
+        #     accounts_meta[aid].update(ta)
 
         return total_amount, accounts_meta  # dicts
 
